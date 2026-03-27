@@ -2,7 +2,7 @@
 // CONSTANTES
 // ============================================================
 
-const URL_API = "https://api.restful-api.dev/objects";
+const URL_API = "https://restful-apidevcloe.vercel.app/objects";
 
 // ============================================================
 // VETOR LOCAL
@@ -45,27 +45,41 @@ function limparFormulario() {
 // ============================================================
 
 function renderizar() {
+  // 1. Limpar tabela
   corpoTabela.innerHTML = "";
 
+  // 2. Percorrer o vetor
   for (let i = 0; i < dispositivos.length; i++) {
     const item = dispositivos[i];
 
+    // Criar linha
     const linha = document.createElement("tr");
 
+    // ID
     const celulaId = document.createElement("td");
     celulaId.textContent = item.id;
 
+    // Nome
     const celulaNome = document.createElement("td");
     celulaNome.textContent = item.name;
 
+    // Cor
     const celulaCor = document.createElement("td");
-    celulaCor.textContent =
-      item.data && item.data.color ? item.data.color : "—";
+    if (item.data && item.data.color) {
+      celulaCor.textContent = item.data.color;
+    } else {
+      celulaCor.textContent = "—";
+    }
 
+    // Capacidade
     const celulaCapacidade = document.createElement("td");
-    celulaCapacidade.textContent =
-      item.data && item.data.capacity ? item.data.capacity : "—";
+    if (item.data && item.data.capacity) {
+      celulaCapacidade.textContent = item.data.capacity;
+    } else {
+      celulaCapacidade.textContent = "—";
+    }
 
+    // Preço
     const celulaPreco = document.createElement("td");
     if (item.data && item.data.price) {
       celulaPreco.textContent = item.data.price.toLocaleString("pt-BR", {
@@ -76,12 +90,14 @@ function renderizar() {
       celulaPreco.textContent = "—";
     }
 
+    // Adicionar células na linha
     linha.appendChild(celulaId);
     linha.appendChild(celulaNome);
     linha.appendChild(celulaCor);
     linha.appendChild(celulaCapacidade);
     linha.appendChild(celulaPreco);
 
+    // Adicionar linha na tabela
     corpoTabela.appendChild(linha);
   }
 }
@@ -95,7 +111,13 @@ async function listarDispositivos() {
     const respostaHTTP = await fetch(URL_API);
     const dados = await respostaHTTP.json();
 
-    dispositivos = dados;
+    if (Array.isArray(dados)) {
+      dispositivos = dados;
+    } else if (dados.data) {
+      dispositivos = dados.data;
+    } else {
+      dispositivos = [];
+    }
 
     renderizar();
 
