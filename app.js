@@ -189,7 +189,67 @@ async function buscarPorId() {
 }
 
 async function cadastrarDispositivo() {
-  alert("Botão CADASTRAR clicado!");
+  // 1. Ler os valores
+  const nome = campoNome.value.trim();
+  const cor = campoCor.value.trim();
+  const capacidade = campoCapacidade.value.trim();
+  const preco = campoPreco.value;
+
+  // 2. Validação
+  if (!nome) {
+    mostrarMensagem("O nome do dispositivo é obrigatório.", "erro");
+    return;
+  }
+
+  // 3. Montar objeto
+  const precoNumerico = parseFloat(preco) || 0;
+
+  const novoDispositivo = {
+    name: nome,
+    data: {
+      color: cor,
+      capacity: capacidade,
+      price: precoNumerico,
+    },
+  };
+
+  try {
+    // 4. POST
+    const respostaHTTP = await fetch(URL_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(novoDispositivo),
+    });
+
+    // 5. Verificar resposta
+    if (!respostaHTTP.ok) {
+      mostrarMensagem(
+        "Erro ao cadastrar. Status: " + respostaHTTP.status,
+        "erro",
+      );
+      return;
+    }
+
+    // 6. Converter resposta
+    const itemCriado = await respostaHTTP.json();
+
+    // 7. Atualizar vetor
+    dispositivos.push(itemCriado);
+
+    // 8. Renderizar
+    renderizar();
+
+    // 9. Limpar + mensagem
+    limparFormulario();
+    mostrarMensagem(
+      'Dispositivo "' + itemCriado.name + '" cadastrado com sucesso!',
+      "sucesso",
+    );
+  } catch (erro) {
+    mostrarMensagem("Erro ao cadastrar: " + erro.message, "erro");
+  }
 }
 
 async function atualizarDispositivo() {
