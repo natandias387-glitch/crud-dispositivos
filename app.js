@@ -135,7 +135,57 @@ async function listarDispositivos() {
 // ============================================================
 
 async function buscarPorId() {
-  alert("Botão BUSCAR POR ID clicado!");
+  // 1. Pegar o ID
+  const id = campoId.value.trim();
+
+  // 2. Validar
+  if (!id) {
+    mostrarMensagem("Digite um ID para buscar.", "erro");
+    return;
+  }
+
+  try {
+    // 3. Fazer GET com ID
+    const respostaHTTP = await fetch(`${URL_API}/${id}`);
+
+    // 4. Verificar se encontrou
+    if (!respostaHTTP.ok) {
+      mostrarMensagem("Dispositivo não encontrado (ID: " + id + ").", "erro");
+      return;
+    }
+
+    // 5. Converter resposta
+    const item = await respostaHTTP.json();
+
+    // 6. Preencher formulário
+    campoNome.value = item.name || "";
+
+    if (item.data && item.data.color) {
+      campoCor.value = item.data.color;
+    } else {
+      campoCor.value = "";
+    }
+
+    if (item.data && item.data.capacity) {
+      campoCapacidade.value = item.data.capacity;
+    } else {
+      campoCapacidade.value = "";
+    }
+
+    if (item.data && item.data.price) {
+      campoPreco.value = item.data.price;
+    } else {
+      campoPreco.value = "";
+    }
+
+    // 7. Atualizar vetor e tabela
+    dispositivos = [item];
+    renderizar();
+
+    mostrarMensagem('Dispositivo "' + item.name + '" encontrado.', "sucesso");
+  } catch (erro) {
+    mostrarMensagem("Erro ao buscar: " + erro.message, "erro");
+  }
 }
 
 async function cadastrarDispositivo() {
