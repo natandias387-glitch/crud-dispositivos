@@ -313,7 +313,34 @@ async function atualizarDispositivo() {
 }
 
 async function excluirDispositivo() {
-  alert("Botão EXCLUIR clicado!");
+  const id = campoId.value.trim();
+
+  if (!id) {
+    mostrarMensagem("Informe o ID para excluir.", "erro");
+    return;
+  }
+
+  try {
+    const respostaHTTP = await fetch(`${URL_API}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!respostaHTTP.ok) {
+      mostrarMensagem(
+        "Erro ao excluir. Status: " + respostaHTTP.status,
+        "erro",
+      );
+      return;
+    }
+
+    dispositivos = dispositivos.filter((d) => d.id != id);
+
+    renderizar();
+
+    mostrarMensagem("Dispositivo excluído com sucesso!", "sucesso");
+  } catch (erro) {
+    mostrarMensagem("Erro ao excluir: " + erro.message, "erro");
+  }
 }
 
 // ============================================================
