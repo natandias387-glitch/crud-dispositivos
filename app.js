@@ -364,3 +364,5 @@ document
 document
   .getElementById("btnExcluir")
   .addEventListener("click", excluirDispositivo);
+
+window.addEventListener("load", listarDispositivos);
